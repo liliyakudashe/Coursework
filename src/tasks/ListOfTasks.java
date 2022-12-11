@@ -2,22 +2,31 @@ package tasks;
 
 import tasks.Task;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.*;
 
 public class ListOfTasks {
-    ArrayList<Task> listOfTask = new ArrayList<>();
+   private final Map<Integer ,Task> MAP_OF_TASKS = new HashMap<>();
     public void addTasks (Task task){
-        listOfTask.add(task);
+        this.MAP_OF_TASKS.put(task.getId(), task);
     }
     public void removeTask (int id){
-        listOfTask.remove(id);
+        this.MAP_OF_TASKS.remove(id);
     }
     
     public int getSizeTask (){
-        return listOfTask.size();
+        return MAP_OF_TASKS.size();
     }
-    public String getTaskInfoById(int id){
-        Task task = listOfTask.get(id);
-        return Task.getTaskInfo();
+
+    public List<Task> getCurrnetTasks(LocalDate valueDate){
+        List<Task> currentTasks = new ArrayList<>();
+        for (Task task: MAP_OF_TASKS.values()) {
+            if (task.isCurrentTask(valueDate)) { currentTasks.add(task);}
+        }
+        return currentTasks;
+    }
+
+    public Collection<Task> getTask(){
+        return this.MAP_OF_TASKS.values();
     }
 }

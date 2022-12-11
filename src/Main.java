@@ -1,75 +1,154 @@
-import tasks.ListOfTasks;
-import tasks.PersonalOrWork;
-import tasks.Task;
-import tasks.User;
+import tasks.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+   private static ListOfTasks LIST_OF_TASKS = new ListOfTasks();
+    private final static DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final static DateTimeFormatter TIME = DateTimeFormatter.ofPattern("hh:mm");
 
     public static void main(String[] args) {
-
-        doWork();
-    }
-    static void doWork(){
-        User pers = new User("Елизавета");
-        ListOfTasks listOfTasks = new ListOfTasks();
-        int what;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Сейчас в списке задач - " + listOfTasks.getSizeTask());
-            System.out.println("Что будем делать: \n 1. Добавить задачу \n 2. Удалить задачу \n 3. Получить задачу на указанный день \n 4.Выход ");
-
-        what = whatDo(pers);
-        if (what == 1){
-            personalOrWork(scanner);
-            introductionOfDateAndTime(scanner);
-            addTaskList(pers,listOfTasks);
+        LIST_OF_TASKS.addTasks(new OneTimeTask("Поход", "Собрать рюкзак" ,
+                LocalDateTime.of(2022,12,12, 23,15),
+                PersonalOrWork.PERSONAL));
+        LIST_OF_TASKS.addTasks(new DailyTask("Дзюдо", "Не забыть кимано и воду" ,
+                LocalDateTime.of(2022,12,10, 16,00),
+                PersonalOrWork.PERSONAL));
+        LIST_OF_TASKS.addTasks(new WeaklyTask("Ментальная арифметика", "абакус" ,
+                LocalDateTime.of(2022,12,05, 15,00),
+                PersonalOrWork.PERSONAL));
+        LIST_OF_TASKS.addTasks(new YearTask("Отпуск", "Купить путёвку" ,
+                LocalDateTime.of(2022,12,31, 10,15),
+                PersonalOrWork.PERSONAL));
+        //doWork();
+        tasksDay(scanner);
+    }
+    static void doWork(){
+        boolean isRunning = true;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Сейчас в списке задач - " + LIST_OF_TASKS.getSizeTask());
+        System.out.println("Что будем делать: \n 1. Добавить задачу \n 2. Удалить задачу \n 3. Получить задачу на указанный день \n 4.Выход \n ");
+        while (isRunning){
+            String taskType = scanner.nextLine();
+            if (taskType == "1"){
+            addTask(scanner);
+            System.out.println("Задача добавлена");
+            isRunning = false;
         }
-        if (what == 2){
-            if (listOfTasks.getSizeTask() > 0){
-                removeTask(pers, listOfTasks);
-                System.out.println("В списке " + listOfTasks.getSizeTask()+" задач.");
+        if (taskType == "2"){
+            if (LIST_OF_TASKS.getSizeTask() > 0){
+                System.out.println("В списке " + LIST_OF_TASKS.getSizeTask()+" задач.");
+                remove(scanner);
             } else {
                 System.out.println("В списке пусто. Нет задач для удаления");
             }
+        }
+            if (taskType == "3") {
+                tasksDay(scanner);
+            }
+            if (taskType == "4"){
+                isRunning = false;
+            }
+        }
+
+    }
+
+    private static void addTask(Scanner scanner){
+        String name = stringScanner("Введите название задачи", scanner);
+        String description = stringScanner("Введите описание задачи", scanner);
+        LocalDateTime taskDate = scannerDate(scanner);
+        RepeatabilityTasks repeatabilityTasks = scannerRepeatability(scanner);
+        PersonalOrWork personalOrWork = scannerPersonalOrWork(scanner);
+        switch (repeatabilityTasks){
+            case ONE_TIME:
+                new OneTimeTask(name, description, taskDate, personalOrWork);
+            case DAILY:
+                new DailyTask(name, description, taskDate, personalOrWork);
+            case WEAKLY:
+                new WeaklyTask(name, description, taskDate, personalOrWork);
+            case MONTHLY:
+                new MonthlyTask(name, description, taskDate, personalOrWork);
+            case YEAR:
+                new YearTask(name, description, taskDate, personalOrWork);
 
         }
     }
-    static int whatDo(User pers) {
-        int d;
-        do {
-            d = pers.getAnswer();
-            if (d != 1 & d != 2 & d != 3 & d != 4 ) {
-                System.out.println("Укажите что нужно сделать: \n 1. Добавить задачу \n 2. Удалить задачу \n 3. Получить задачу на указанный день \n 4.Выход");
-            }
-        } while(d != 1 & d != 2 & d != 3 & d != 4);
-        return d;
-    }
-    public static LocalDateTime introductionOfDateAndTime(Scanner scanner) {
+
+    private static PersonalOrWork scannerPersonalOrWork(Scanner scanner) {
         while (true){
             try {
-                System.out.println("Введите дату и время задачи(в формате dd.mm.yyyy hh:mm): ");
-                String dateTime = scanner.nextLine();
-                return LocalDateTime.parse(dateTime, DATE_TIME_FORMATTER);
+                System.out.println("Выберите тип задачи ");
+                for (PersonalOrWork personalOrWork : PersonalOrWork.values()){
+                    System.out.println(personalOrWork.ordinal());
+                }
+                System.out.print("Введите тип задачи ");
+                String receiving = scanner.nextLine();
+                int task = Integer.parseInt(receiving);
+                return PersonalOrWork.values()[task];
+            } catch (NumberFormatException e){
+                System.out.println("Введен неверный номер задачи");
             }
-            catch (DateTimeParseException e){
-                System.out.println("Введён неверный формат даты и времени!");
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Тип задачи не найден");
             }
         }
     }
 
-    public static PersonalOrWork personalOrWork(Scanner scanner){
+    private static RepeatabilityTasks scannerRepeatability(Scanner scanner) {
+        while (true){
+            try {
+                System.out.println("Выберите тип повторяемость задачи ");
+                for (RepeatabilityTasks repeatabilityTasks : RepeatabilityTasks.values()){
+                    System.out.println(repeatabilityTasks.ordinal());
+                }
+                System.out.print("Введите тип повторяемость задачи ");
+                String receiving = scanner.nextLine();
+                int task = Integer.parseInt(receiving);
+               return RepeatabilityTasks.values()[task];
+            } catch (NumberFormatException e){
+                System.out.println("Введен неверный номер задачи");
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Тип задачи не найден");
+            }
+        }
+    }
+
+    private static LocalDateTime scannerDate(Scanner scanner) {
+        LocalDate localDate = introductionOfDate(scanner);
+        LocalTime localTime = introductionOfTime(scanner);
+        return localDate.atTime(localTime);
+    }
+
+    private static String stringScanner(String message, Scanner scanner) {
+        while (true){
+            System.out.println(message);
+            String stringScanner = scanner.nextLine();
+            if (stringScanner == null || stringScanner.isBlank()){
+                System.out.println("Название задачи не может быть пустым!");
+            }else {
+                return stringScanner;
+            }
+        }
+    }
+
+
+    private static PersonalOrWork personalOrWork(Scanner scanner){
         System.out.println("Выберите тип задачи: \n" +
                 "1. Рабочая \n" +
                 "2. Личная \n");
         while (true){
-            System.out.println("Введите тип задачи: ");
+            System.out.print("Введите тип задачи: ");
             String taskType = scanner.nextLine();
             switch (taskType){
                 case "1":
@@ -82,31 +161,64 @@ public class Main {
         }
     }
 
-    static void removeTask(User pers, ListOfTasks listOfTasks) {
-        int numTask;
-        System.out.println("В списке задач - " + listOfTasks.getSizeTask());
-        System.out.println("Укажите id удаляемой задачи");
-        do {
-            numTask = pers.getAnswer();
-        } while(numTask < 1 || numTask > listOfTasks.getSizeTask());
-        --numTask;
-        System.out.println("Вы уверены что хотите удалить задачу: " + listOfTasks.getTaskInfoById(numTask) + "?");
-        System.out.println("0-нет; 1-да");
-        int ans;
-        do {
-            ans = pers.getAnswer();
-        } while (ans != 0 & ans != 1);
-        if (ans == 1) {
-            listOfTasks.removeTask(numTask);
+
+    private static void tasksDay (Scanner scanner) {
+        LocalDate localDate = introductionOfDate(scanner);
+        Collection<Task> taskCollection = LIST_OF_TASKS.getCurrnetTasks(localDate);
+        System.out.println("Все задачи на " + localDate.format(DATE));
+        for (Task task : taskCollection){
+            System.out.println(task.getPersonalOrWork()+" - тип задачи.\n "+
+                    task.getName()+ " - название задачи. \n"+
+                    task.getDescription() + " - описание задачи.\n"+
+                    task.getLocalDateTime());
         }
     }
 
-    static void addTaskList (User pers, ListOfTasks listOfTasks) {
-       // listOfTasks.addTasks(new Task());
-        System.out.println("Задача добавлена в список");
+    private static LocalDate introductionOfDate(Scanner scanner) {
+        while (true){
+            try {
+                System.out.print("Введите дату задачи(в формате dd.mm.yyyy): ");
+                String dateTime = scanner.nextLine();
+                return LocalDate.parse(dateTime, DATE);
+            }
+            catch (DateTimeParseException e){
+                System.out.println("Введён неверный формат даты!");
+            }
+        }
     }
 
+    private static LocalTime introductionOfTime(Scanner scanner) {
+        while (true){
+            try {
+                System.out.print("Введите время задачи(в формате hh:mm): ");
+                String dateTime = scanner.nextLine();
+                return LocalTime.parse(dateTime, TIME);
+            }
+            catch (DateTimeParseException e){
+                System.out.println("Введён неверный формат времени!");
+            }
+        }
+    }
 
+    private static void remove (Scanner scanner){
+        for (Task task : LIST_OF_TASKS.getTask()){
+            System.out.println(task.getName() + " " + task.getDescription() + " "
+            + task.getId());
+        }
+        while (true){
+            try {
+                System.out.print("Выберите ID задачи для удаления: ");
+                String iDLine = scanner.nextLine();
+                int id = Integer.parseInt(iDLine);
+                LIST_OF_TASKS.removeTask(id);
+                break;
+            }
+            catch (NumberFormatException e){
+                System.out.println("Неверный ID!");
+            }
 
+        }
+
+    }
 
 }

@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 public class OneTimeTask extends Task {
 
-    public OneTimeTask(String name, String description, LocalDateTime localDateTime, PersonalOrWork personalOrWork) {
-        super(name, description, localDateTime, personalOrWork);
+    public OneTimeTask(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
+        super(name, description, localDateTime, taskTypeEnum);
     }
 
     public boolean isCurrentTask(LocalDate valueDate) {

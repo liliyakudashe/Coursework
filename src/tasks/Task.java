@@ -1,6 +1,5 @@
 package tasks;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -8,16 +7,16 @@ public abstract class Task implements Repeatability {
     private final String name;
     private final String description;
     private final LocalDateTime localDateTime;
-    private final PersonalOrWork personalOrWork;
-    private int id;
+    private final TaskTypeEnum taskTypeEnum;
+    private final int id;
     private static int count = 0;
 
-    public Task(String name, String description, LocalDateTime localDateTime, PersonalOrWork personalOrWork) {
+    public Task(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
         this.id = count++;
         this.name = name;
         this.description = description;
         this.localDateTime = localDateTime;
-        this.personalOrWork = personalOrWork;
+        this.taskTypeEnum = taskTypeEnum;
     }
 
     public String getName() {
@@ -32,8 +31,8 @@ public abstract class Task implements Repeatability {
         return localDateTime;
     }
 
-    public PersonalOrWork getPersonalOrWork() {
-        return personalOrWork;
+    public TaskTypeEnum getTaskTypeEnum() {
+        return taskTypeEnum;
     }
 
     public int getId() {
@@ -50,19 +49,19 @@ public abstract class Task implements Repeatability {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description) && Objects.equals(localDateTime, task.localDateTime) && personalOrWork == task.personalOrWork;
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description) && Objects.equals(localDateTime, task.localDateTime) && taskTypeEnum == task.taskTypeEnum;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, localDateTime, personalOrWork, id);
+        return Objects.hash(name, description, localDateTime, taskTypeEnum, id);
     }
 
     @Override
     public String toString() {
         return "Название задачи: " + name + ", описание: " + description+
                 ", дата и время: " + localDateTime +
-                ", тип задачи: " + personalOrWork +
+                ", тип задачи: " + taskTypeEnum +
                 ", id " + id;
     }
 

@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class DailyTask extends Task{
-    public DailyTask(String name, String description, LocalDateTime localDateTime, PersonalOrWork personalOrWork) {
-        super(name, description, localDateTime, personalOrWork);
+    public DailyTask(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
+        super(name, description, localDateTime, taskTypeEnum);
     }
 
     public boolean isCurrentTask(LocalDate valueDate) {

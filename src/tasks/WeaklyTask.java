@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 public class WeaklyTask extends Task {
 
-    public WeaklyTask(String name, String description, LocalDateTime localDateTime, PersonalOrWork personalOrWork) {
-        super(name, description, localDateTime, personalOrWork);
+    public WeaklyTask(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
+        super(name, description, localDateTime, taskTypeEnum);
     }
 
     public boolean isCurrentTask(LocalDate valueDate) {

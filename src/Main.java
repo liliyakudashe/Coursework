@@ -6,57 +6,57 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
 
-   private static ListOfTasks LIST_OF_TASKS = new ListOfTasks();
+   private static ListOfTasks mapOfTasks = new ListOfTasks();
     private final static DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final static DateTimeFormatter TIME = DateTimeFormatter.ofPattern("hh:mm");
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        LIST_OF_TASKS.addTasks(new OneTimeTask("Поход", "Собрать рюкзак" ,
+        mapOfTasks.addTasks(new OneTimeTask("Поход", "Собрать рюкзак" ,
                 LocalDateTime.of(2022,12,12, 23,15),
-                PersonalOrWork.PERSONAL));
-        LIST_OF_TASKS.addTasks(new DailyTask("Дзюдо", "Не забыть кимано и воду" ,
-                LocalDateTime.of(2022,12,10, 16,00),
-                PersonalOrWork.PERSONAL));
-        LIST_OF_TASKS.addTasks(new WeaklyTask("Ментальная арифметика", "абакус" ,
-                LocalDateTime.of(2022,12,05, 15,00),
-                PersonalOrWork.PERSONAL));
-        LIST_OF_TASKS.addTasks(new YearTask("Отпуск", "Купить путёвку" ,
+                TaskTypeEnum.PERSONAL));
+        mapOfTasks.addTasks(new DailyTask("Дзюдо", "Не забыть кимано и воду" ,
+                LocalDateTime.of(2022,12,10, 16,45),
+                TaskTypeEnum.PERSONAL));
+        mapOfTasks.addTasks(new WeaklyTask("Ментальная арифметика", "абакус" ,
+                LocalDateTime.of(2022,12,11, 15,25),
+                TaskTypeEnum.PERSONAL));
+        mapOfTasks.addTasks(new YearTask("Отпуск", "Купить путёвку" ,
                 LocalDateTime.of(2022,12,31, 10,15),
-                PersonalOrWork.PERSONAL));
-        //doWork();
+                TaskTypeEnum.PERSONAL));
+        doWork();
         tasksDay(scanner);
     }
     static void doWork(){
         boolean isRunning = true;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Сейчас в списке задач - " + LIST_OF_TASKS.getSizeTask());
+        System.out.println("Сейчас в списке задач - " + mapOfTasks.getSizeTask());
         System.out.println("Что будем делать: \n 1. Добавить задачу \n 2. Удалить задачу \n 3. Получить задачу на указанный день \n 4.Выход \n ");
         while (isRunning){
             String taskType = scanner.nextLine();
-            if (taskType == "1"){
+            if (Objects.equals(taskType, "1")){
             addTask(scanner);
             System.out.println("Задача добавлена");
             isRunning = false;
         }
-        if (taskType == "2"){
-            if (LIST_OF_TASKS.getSizeTask() > 0){
-                System.out.println("В списке " + LIST_OF_TASKS.getSizeTask()+" задач.");
+        if (Objects.equals(taskType, "2")){
+            if (mapOfTasks.getSizeTask() > 0){
+                System.out.println("В списке " + mapOfTasks.getSizeTask()+" задач.");
                 remove(scanner);
             } else {
                 System.out.println("В списке пусто. Нет задач для удаления");
             }
         }
-            if (taskType == "3") {
+            if (Objects.equals(taskType, "3")) {
                 tasksDay(scanner);
             }
-            if (taskType == "4"){
+            if (Objects.equals(taskType, "4")){
                 isRunning = false;
             }
         }
@@ -68,33 +68,33 @@ public class Main {
         String description = stringScanner("Введите описание задачи", scanner);
         LocalDateTime taskDate = scannerDate(scanner);
         RepeatabilityTasks repeatabilityTasks = scannerRepeatability(scanner);
-        PersonalOrWork personalOrWork = scannerPersonalOrWork(scanner);
+        TaskTypeEnum taskTypeEnum = scannerTaskTypeEnum(scanner);
         switch (repeatabilityTasks){
             case ONE_TIME:
-                new OneTimeTask(name, description, taskDate, personalOrWork);
+                new OneTimeTask(name, description, taskDate, taskTypeEnum);
             case DAILY:
-                new DailyTask(name, description, taskDate, personalOrWork);
+                new DailyTask(name, description, taskDate, taskTypeEnum);
             case WEAKLY:
-                new WeaklyTask(name, description, taskDate, personalOrWork);
+                new WeaklyTask(name, description, taskDate, taskTypeEnum);
             case MONTHLY:
-                new MonthlyTask(name, description, taskDate, personalOrWork);
+                new MonthlyTask(name, description, taskDate, taskTypeEnum);
             case YEAR:
-                new YearTask(name, description, taskDate, personalOrWork);
+                new YearTask(name, description, taskDate, taskTypeEnum);
 
         }
     }
 
-    private static PersonalOrWork scannerPersonalOrWork(Scanner scanner) {
+    private static TaskTypeEnum scannerTaskTypeEnum(Scanner scanner) {
         while (true){
             try {
                 System.out.println("Выберите тип задачи ");
-                for (PersonalOrWork personalOrWork : PersonalOrWork.values()){
-                    System.out.println(personalOrWork.ordinal());
+                for (TaskTypeEnum taskTypeEnum : TaskTypeEnum.values()){
+                    System.out.println(taskTypeEnum.ordinal());
                 }
                 System.out.print("Введите тип задачи ");
                 String receiving = scanner.nextLine();
                 int task = Integer.parseInt(receiving);
-                return PersonalOrWork.values()[task];
+                return TaskTypeEnum.values()[task];
             } catch (NumberFormatException e){
                 System.out.println("Введен неверный номер задачи");
             }
@@ -143,7 +143,7 @@ public class Main {
     }
 
 
-    private static PersonalOrWork personalOrWork(Scanner scanner){
+    private static TaskTypeEnum taskTypeEnum(Scanner scanner){
         System.out.println("Выберите тип задачи: \n" +
                 "1. Рабочая \n" +
                 "2. Личная \n");
@@ -152,9 +152,9 @@ public class Main {
             String taskType = scanner.nextLine();
             switch (taskType){
                 case "1":
-                    return PersonalOrWork.WORK;
+                    return TaskTypeEnum.WORK;
                 case "2":
-                    return PersonalOrWork.PERSONAL;
+                    return TaskTypeEnum.PERSONAL;
                 default:
                     System.out.println("Вы ввели неверный тип задачи, попробуте снова!");
             }
@@ -164,10 +164,10 @@ public class Main {
 
     private static void tasksDay (Scanner scanner) {
         LocalDate localDate = introductionOfDate(scanner);
-        Collection<Task> taskCollection = LIST_OF_TASKS.getCurrnetTasks(localDate);
+        Collection<Task> taskCollection = mapOfTasks.getCurrnetTasks(localDate);
         System.out.println("Все задачи на " + localDate.format(DATE));
         for (Task task : taskCollection){
-            System.out.println(task.getPersonalOrWork()+" - тип задачи.\n "+
+            System.out.println(task.getTaskTypeEnum()+" - тип задачи.\n "+
                     task.getName()+ " - название задачи. \n"+
                     task.getDescription() + " - описание задачи.\n"+
                     task.getLocalDateTime());
@@ -201,7 +201,7 @@ public class Main {
     }
 
     private static void remove (Scanner scanner){
-        for (Task task : LIST_OF_TASKS.getTask()){
+        for (Task task : mapOfTasks.getTask()){
             System.out.println(task.getName() + " " + task.getDescription() + " "
             + task.getId());
         }
@@ -210,7 +210,7 @@ public class Main {
                 System.out.print("Выберите ID задачи для удаления: ");
                 String iDLine = scanner.nextLine();
                 int id = Integer.parseInt(iDLine);
-                LIST_OF_TASKS.removeTask(id);
+                mapOfTasks.removeTask(id);
                 break;
             }
             catch (NumberFormatException e){

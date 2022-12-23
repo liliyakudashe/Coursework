@@ -1,5 +1,4 @@
 package tasks;
-
 public enum RepeatabilityTasks {
     ONE_TIME("однократная"),
     DAILY("ежедневная"),

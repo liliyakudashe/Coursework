@@ -1,5 +1,4 @@
 package tasks;
-
 public enum TaskTypeEnum {
     PERSONAL("Персональная"),
     WORK("Рабочая");

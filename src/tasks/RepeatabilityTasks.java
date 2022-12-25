@@ -5,7 +5,6 @@ public enum RepeatabilityTasks {
     WEAKLY("еженедельная"),
     MONTHLY("ежемесячная"),
     YEAR("ежегодная");
-
     private final String name;
     RepeatabilityTasks(String name) {
         this.name = name;

@@ -1,7 +1,6 @@
 package tasks;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 public class MonthlyTask extends Task{
     public MonthlyTask(String name, String description, LocalDateTime localDateTime,  TaskTypeEnum taskTypeEnum) {
         super(name, description, localDateTime, taskTypeEnum);

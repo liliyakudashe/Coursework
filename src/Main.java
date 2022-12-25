@@ -8,7 +8,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
-
 public class Main {
 
    private static ListOfTasks mapOfTasks = new ListOfTasks();

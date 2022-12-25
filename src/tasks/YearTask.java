@@ -1,7 +1,6 @@
 package tasks;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 public class YearTask extends Task{
     public YearTask(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
         super(name, description, localDateTime, taskTypeEnum);

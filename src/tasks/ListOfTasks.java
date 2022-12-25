@@ -1,7 +1,6 @@
 package tasks;
 import java.time.LocalDate;
 import java.util.*;
-
 public class ListOfTasks {
    private final Map<Integer ,Task> MAP_OF_TASKS = new HashMap<>();
     public void addTasks (Task task){

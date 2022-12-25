@@ -1,7 +1,6 @@
 package tasks;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 public abstract class Task implements Repeatability {
     private final String name;
     private final String description;

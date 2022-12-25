@@ -1,7 +1,6 @@
 package tasks;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 public class WeaklyTask extends Task {
 
     public WeaklyTask(String name, String description, LocalDateTime localDateTime, TaskTypeEnum taskTypeEnum) {
